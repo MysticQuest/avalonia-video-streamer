@@ -5,6 +5,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using MyVideoStreamer.Views;
+using MyVideoStreamer.Services;
 
 namespace VideoStreamer.Desktop
 {
