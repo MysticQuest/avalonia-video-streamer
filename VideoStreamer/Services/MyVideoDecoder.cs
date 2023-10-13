@@ -10,10 +10,10 @@ namespace MyVideoStreamer.Services
 {
     internal unsafe class MyVideoDecoder
     {
-        private readonly AVFormatContext* _pFormatContext;
+        private AVFormatContext* _pFormatContext;
         private AVCodecContext* _pCodecContext;
-        private readonly AVFrame* _pFrame;
-        private readonly AVPacket* _pPacket;
+        private AVFrame* _pFrame;
+        private AVPacket* _pPacket;
 
         public MyVideoDecoder()
         {
@@ -26,50 +26,77 @@ namespace MyVideoStreamer.Services
 
         public void DecodeVideo(PipeReader reader)
         {
-            AVFormatContext* pFormatContext = null;
-            AVCodecContext* pCodecContext = null;
-            AVFrame* pFrame = null;
-            AVPacket* pPacket = null;
+            InitializeDecoder("your_video_url_here");
+            DecodeAndRenderFrames();
+            Cleanup();
+        }
 
-            try
+        private void InitializeDecoder(string url)
+        {
+            fixed (AVFormatContext** ppFormatContext = &_pFormatContext)
             {
-                int ret = ffmpeg.avformat_open_input(&pFormatContext, "your_video_url_here", null, null);
+                int ret = ffmpeg.avformat_open_input(ppFormatContext, url, null, null);
                 if (ret < 0) throw new ApplicationException($"Could not open input: {GetErrorMessage(ret)}");
 
-                ret = ffmpeg.avformat_find_stream_info(pFormatContext, null);
+                ret = ffmpeg.avformat_find_stream_info(*ppFormatContext, null);
                 if (ret < 0) throw new ApplicationException($"Could not find stream info: {GetErrorMessage(ret)}");
-
-                AVStream* videoStream = null;
-                for (var i = 0; i < pFormatContext->nb_streams; i++)
-                {
-                    if (pFormatContext->streams[i]->codecpar->codec_type == AVMediaType.AVMEDIA_TYPE_VIDEO)
-                    {
-                        videoStream = pFormatContext->streams[i];
-                        break;
-                    }
-                }
-
-                if (videoStream == null) throw new ApplicationException("Could not find video stream");
-
-                var codecId = videoStream->codecpar->codec_id;
-                var pCodec = ffmpeg.avcodec_find_decoder(codecId);
-                if (pCodec == null) throw new ApplicationException("Unsupported codec");
-
-                pCodecContext = ffmpeg.avcodec_alloc_context3(pCodec);
-                if (pCodecContext == null) throw new ApplicationException("Could not allocate codec context");
-
-                ret = ffmpeg.avcodec_open2(pCodecContext, pCodec, null);
-                if (ret < 0) throw new ApplicationException($"Could not open codec: {GetErrorMessage(ret)}");
-
             }
-            finally
-            {
-                ffmpeg.avformat_close_input(&pFormatContext);
-                if (pCodecContext != null) ffmpeg.avcodec_close(pCodecContext);
-                ffmpeg.av_frame_free(&pFrame);
-                ffmpeg.av_packet_free(&pPacket);
-            }
+
+            AVStream* videoStream = FindVideoStream(_pFormatContext);
+            if (videoStream == null) throw new ApplicationException("Could not find video stream");
+
+            _pCodecContext = AllocateCodecContext(videoStream);
         }
+
+        private AVStream* FindVideoStream(AVFormatContext* pFormatContext)
+        {
+            for (var i = 0; i < pFormatContext->nb_streams; i++)
+            {
+                if (pFormatContext->streams[i]->codecpar->codec_type == AVMediaType.AVMEDIA_TYPE_VIDEO)
+                {
+                    return pFormatContext->streams[i];
+                }
+            }
+            return null;
+        }
+
+        private AVCodecContext* AllocateCodecContext(AVStream* videoStream)
+        {
+            var codecId = videoStream->codecpar->codec_id;
+            var pCodec = ffmpeg.avcodec_find_decoder(codecId);
+            if (pCodec == null) throw new ApplicationException("Unsupported codec");
+
+            var pCodecContext = ffmpeg.avcodec_alloc_context3(pCodec);
+            if (pCodecContext == null) throw new ApplicationException("Could not allocate codec context");
+
+            int ret = ffmpeg.avcodec_open2(pCodecContext, pCodec, null);
+            if (ret < 0) throw new ApplicationException($"Could not open codec: {GetErrorMessage(ret)}");
+
+            return pCodecContext;
+        }
+
+        private void DecodeAndRenderFrames()
+        {
+    
+        }
+
+        private void Cleanup()
+        {
+            AVFormatContext* tempFormatContext = _pFormatContext;
+            ffmpeg.avformat_close_input(&tempFormatContext);
+            if (_pCodecContext != null) ffmpeg.avcodec_close(_pCodecContext);
+
+            AVFrame* tempFrame = _pFrame;
+            AVPacket* tempPacket = _pPacket;
+
+            ffmpeg.av_frame_free(&tempFrame);
+            ffmpeg.av_packet_free(&tempPacket);
+
+            _pFormatContext = tempFormatContext;
+            _pFrame = tempFrame;
+            _pPacket = tempPacket;
+        }
+
 
         private string GetErrorMessage(int error)
         {
