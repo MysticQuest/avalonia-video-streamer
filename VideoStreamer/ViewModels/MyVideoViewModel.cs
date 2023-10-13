@@ -1,6 +1,7 @@
 ﻿using MyVideoStreamer.Services;
 using ReactiveUI;
 using System.IO.Pipelines;
+using System.Threading.Tasks;
 
 namespace MyVideoStreamer.ViewModels
 {
@@ -11,10 +12,9 @@ namespace MyVideoStreamer.ViewModels
         public MyVideoViewModel()
         {
             _videoStream = new MyVideoStream();
-            StartStreamingAsync();
         }
 
-        private async void StartStreamingAsync()
+        public async Task StartStreamingAsync()
         {
             await _videoStream.StartStreamingAsync("http://example.com/videostream");
         }

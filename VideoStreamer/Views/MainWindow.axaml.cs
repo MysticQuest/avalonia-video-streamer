@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using MyVideoStreamer.ViewModels;
+using System.Threading.Tasks;
 
 namespace MyVideoStreamer.Views
 {
@@ -8,8 +9,18 @@ namespace MyVideoStreamer.Views
     {
         public MainWindow()
         {
-            DataContext = new MyVideoViewModel();
             AvaloniaXamlLoader.Load(this);
+        }
+
+        public async Task InitializeAsync()
+        {
+            await InitializeStreaming();
+        }
+
+        private async Task InitializeStreaming()
+        {
+            var viewModel = new MyVideoViewModel();
+            await viewModel.StartStreamingAsync();
         }
     }
 }

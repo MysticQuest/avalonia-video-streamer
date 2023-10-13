@@ -1,24 +1,36 @@
 ﻿using System;
-
 using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
+using MyVideoStreamer.Views;
 
-namespace VideoStreamer.Desktop;
-
-class Program
+namespace VideoStreamer.Desktop
 {
-    // Initialization code. Don't use any Avalonia, third-party APIs or any
-    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-    // yet and stuff might break.
-    [STAThread]
-    public static void Main(string[] args) => BuildAvaloniaApp()
-        .StartWithClassicDesktopLifetime(args);
+    class Program
+    {
+        [STAThread]
+        public static void Main(string[] args)
+        {
+            BuildAvaloniaApp().Start(AppMain, args);
+        }
 
-    // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-            .WithInterFont()
-            .LogToTrace()
-            .UseReactiveUI();
+        public static AppBuilder BuildAvaloniaApp()
+            => AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .WithInterFont()
+                .LogToTrace()
+                .UseReactiveUI();
+
+        private static void AppMain(Application app, string[] args)
+        {
+            if (app.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime)
+            {
+                var mainWindow = new MainWindow();
+                mainWindow.InitializeAsync().GetAwaiter().GetResult();
+                desktopLifetime.MainWindow = mainWindow;
+            }
+        }
+    }
 }
