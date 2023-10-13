@@ -26,6 +26,7 @@ namespace MyVideoStreamer.Services
 
                 if (Directory.Exists(ffmpegDirectory) && File.Exists(ffmpegBinaryPath))
                 {
+                    System.Diagnostics.Debug.WriteLine($"FFmpeg binaries found in: {ffmpegDirectory}");
                     Console.WriteLine($"FFmpeg binaries found in: {ffmpegDirectory}");
                     ffmpeg.RootPath = ffmpegDirectory;
                     return;

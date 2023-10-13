@@ -21,7 +21,7 @@ namespace MyVideoStreamer.Desktop
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
             }
         }
 
@@ -47,7 +47,7 @@ namespace MyVideoStreamer.Desktop
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
             }
         }
     }

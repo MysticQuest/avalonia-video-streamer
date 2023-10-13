@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Avalonia;
+using System;
 using System.IO.Pipelines;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -50,11 +51,13 @@ namespace MyVideoStreamer.Services
             }
             catch (HttpRequestException e)
             {
+                System.Diagnostics.Debug.WriteLine($"HTTP Error: {e.Message}");
                 Console.WriteLine($"HTTP Error: {e.Message}");
                 _pipe.Writer.Complete(e);
             }
             catch (Exception e)
             {
+                System.Diagnostics.Debug.WriteLine($"Error: {e.Message}");
                 Console.WriteLine($"Error: {e.Message}");
                 _pipe.Writer.Complete(e);
             }

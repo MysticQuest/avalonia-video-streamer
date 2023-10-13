@@ -95,6 +95,7 @@ namespace MyVideoStreamer.Services
                     ret = ffmpeg.avcodec_send_packet(_pCodecContext, _pPacket);
                     if (ret < 0)
                     {
+                        System.Diagnostics.Debug.WriteLine($"Error sending packet to decoder: {GetErrorMessage(ret)}");
                         Console.WriteLine($"Error sending packet to decoder: {GetErrorMessage(ret)}");
                         break;
                     }
@@ -106,6 +107,7 @@ namespace MyVideoStreamer.Services
 
                     if (ret != ffmpeg.AVERROR(ffmpeg.EAGAIN))
                     {
+                        System.Diagnostics.Debug.WriteLine($"Error receiving frame from decoder: {GetErrorMessage(ret)}");
                         Console.WriteLine($"Error receiving frame from decoder: {GetErrorMessage(ret)}");
                         break;
                     }
@@ -116,6 +118,7 @@ namespace MyVideoStreamer.Services
 
             if (ret != ffmpeg.AVERROR_EOF)
             {
+                System.Diagnostics.Debug.WriteLine($"Error reading frame: {GetErrorMessage(ret)}");
                 Console.WriteLine($"Error reading frame: {GetErrorMessage(ret)}");
             }
         }
