@@ -17,7 +17,7 @@ namespace MyVideoStreamer.Desktop
         {
             try
             {
-                BuildAvaloniaApp().Start(AppMain, args);
+                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
             }
             catch (Exception ex)
             {

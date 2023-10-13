@@ -10,6 +10,7 @@ namespace MyVideoStreamer
     {
         public override void Initialize()
         {
+            System.Diagnostics.Debug.WriteLine($"ApplicationLifetime is of type: {ApplicationLifetime.GetType().Name}");
             AvaloniaXamlLoader.Load(this);
         }
 
