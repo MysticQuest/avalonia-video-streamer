@@ -6,14 +6,9 @@ using MyVideoStreamer.ViewModels;
 
 namespace MyVideoStreamer.Views
 {
-    public partial class MyVideoView : ReactiveUserControl<MyVideoViewModel>
+    internal partial class MyVideoView : ReactiveUserControl<MyVideoViewModel>
     {
         public MyVideoView()
-        {
-            InitializeComponent();
-        }
-
-        private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
         }

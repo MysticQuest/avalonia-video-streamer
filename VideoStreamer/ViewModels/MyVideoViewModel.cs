@@ -1,28 +1,20 @@
-﻿using ReactiveUI;
-using System;
-using System.Collections.Generic;
+﻿using MyVideoStreamer.Services;
+using ReactiveUI;
 using System.IO.Pipelines;
-using System.Linq;
-using System.Reactive;
-using System.Text;
-using System.Threading.Tasks;
-using MyVideoStreamer.Services;
 
 namespace MyVideoStreamer.ViewModels
 {
-    public class MyVideoViewModel : ReactiveObject
+    internal class MyVideoViewModel : ReactiveObject
     {
         private readonly MyVideoStream _videoStream;
-
-        public ReactiveCommand<Unit, Unit> StartStreamingCommand { get; }
 
         public MyVideoViewModel()
         {
             _videoStream = new MyVideoStream();
-            StartStreamingCommand = ReactiveCommand.CreateFromTask(StartStreamingAsync);
+            StartStreamingAsync();
         }
 
-        private async Task StartStreamingAsync()
+        private async void StartStreamingAsync()
         {
             await _videoStream.StartStreamingAsync("http://example.com/videostream");
         }

@@ -2,8 +2,8 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
-using VideoStreamer.ViewModels;
-using VideoStreamer.Views;
+using MyVideoStreamer.ViewModels;
+using MyVideoStreamer.Views;
 
 namespace VideoStreamer;
 
@@ -20,14 +20,14 @@ public partial class App : Application
         {
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainViewModel()
+                DataContext = new MyVideoViewModel()
             };
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-            singleViewPlatform.MainView = new MainView
+            singleViewPlatform.MainView = new MyVideoView
             {
-                DataContext = new MainViewModel()
+                DataContext = new MyVideoViewModel()
             };
         }
 

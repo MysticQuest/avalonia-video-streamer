@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyVideoStreamer.Services
 {
-    public class MyVideoStream
+    internal class MyVideoStream
     {
         private readonly HttpClient _httpClient;
         private readonly Pipe _pipe;
