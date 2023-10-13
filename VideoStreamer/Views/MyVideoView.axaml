@@ -1,4 +1,13 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="MyVideoStreamer.Views.MyVideoView">
+             xmlns:vm="using:MyVideoStreamer.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MyVideoStreamer.Views.MyVideoView"
+             DataContext="{Binding RelativeSource={RelativeSource Self}, Path=ViewModel}">
+
+  <views:MyVideoView>
+    <Image Source="{Binding CurrentFrame}" />
+  </views:MyVideoView>
 </UserControl>

@@ -1,10 +1,15 @@
-﻿using FFmpeg.AutoGen;
+﻿using Avalonia.Media.Imaging;
+using Avalonia;
+using FFmpeg.AutoGen;
 using System;
 using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using MyVideoStreamer.ViewModels;
+using Avalonia.Platform;
 
 namespace MyVideoStreamer.Services
 {
@@ -15,9 +20,11 @@ namespace MyVideoStreamer.Services
         private AVFrame* _pFrame;
         private AVPacket* _pPacket;
         private int _videoStreamIndex = -1;
+        private MyVideoViewModel _viewModel;
 
-        public MyVideoDecoder()
+        public MyVideoDecoder(MyVideoViewModel viewModel)
         {
+            _viewModel = viewModel;
             FFmpegBinariesHelper.RegisterFFmpegBinaries();
             _pFormatContext = ffmpeg.avformat_alloc_context();
             _pCodecContext = null;
@@ -115,9 +122,51 @@ namespace MyVideoStreamer.Services
 
         private void RenderFrame(AVFrame* pFrame)
         {
-            // Your rendering logic here
+            var bitmap = ConvertFrameToWriteableBitmap(pFrame);
+            // Assume _viewModel is an instance of MyVideoViewModel
+            _viewModel.UpdateFrame(bitmap);
         }
 
+        private WriteableBitmap ConvertFrameToWriteableBitmap(AVFrame* pFrame)
+        {
+            int width = pFrame->width;
+            int height = pFrame->height;
+            var writableBitmap = new WriteableBitmap(new PixelSize(width, height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Unpremul);
+
+            var pSwsContext = ffmpeg.sws_getContext(
+                width,
+                height,
+                (AVPixelFormat)pFrame->format,
+                width,
+                height,
+                AVPixelFormat.AV_PIX_FMT_BGRA,
+                ffmpeg.SWS_BILINEAR,
+                null,
+                null,
+                null);
+
+            if (pSwsContext == null)
+                throw new ApplicationException("Could not initialize the conversion context.");
+
+            var destData = writableBitmap.Lock();
+            var destDataPtr = (byte*)destData.Address;
+            int destStride = destData.RowBytes;
+            byte*[] destDataArray = { destDataPtr };
+            int[] destStrideArray = { destStride };
+
+            ffmpeg.sws_scale(
+                pSwsContext,
+                pFrame->data,
+                pFrame->linesize,
+                0,
+                height,
+                destDataArray,
+                destStrideArray);
+
+            ffmpeg.sws_freeContext(pSwsContext);
+
+            return writableBitmap;
+        }
 
         private void Cleanup()
         {
