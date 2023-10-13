@@ -15,25 +15,39 @@ namespace MyVideoStreamer.Desktop
         [STAThread]
         public static void Main(string[] args)
         {
-            BuildAvaloniaApp().Start(AppMain, args);
+            try
+            {
+                BuildAvaloniaApp().Start(AppMain, args);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<MyVideoStreamerApp>()
-                .UsePlatformDetect()
-                .WithInterFont()
-                .LogToTrace()
-                .UseReactiveUI();
+          => AppBuilder.Configure<MyVideoStreamerApp>()
+              .UsePlatformDetect()
+              .WithInterFont()
+              .LogToTrace()
+              .UseReactiveUI();
 
         private static void AppMain(Application app, string[] args)
         {
-            FFmpegBinariesHelper.RegisterFFmpegBinaries(); 
-
-            if (app.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime)
+            try
             {
-                var mainWindow = new MainWindow();
-                mainWindow.InitializeAsync().GetAwaiter().GetResult();
-                desktopLifetime.MainWindow = mainWindow;
+                FFmpegBinariesHelper.RegisterFFmpegBinaries();
+
+                if (app.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime)
+                {
+                    var mainWindow = new MainWindow();
+                    mainWindow.InitializeAsync().GetAwaiter().GetResult();
+                    desktopLifetime.MainWindow = mainWindow;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
         }
     }
