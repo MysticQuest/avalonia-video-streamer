@@ -6,7 +6,7 @@ using MyVideoStreamer.ViewModels;
 
 namespace MyVideoStreamer.Views
 {
-    internal partial class MyVideoView : ReactiveUserControl<MyVideoViewModel>
+    public partial class MyVideoView : ReactiveUserControl<MyVideoViewModel>
     {
         public MyVideoView()
         {

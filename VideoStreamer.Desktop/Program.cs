@@ -6,6 +6,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using MyVideoStreamer.Views;
 using MyVideoStreamer.Services;
+using MyVideoStreamer;
 
 namespace MyVideoStreamer.Desktop
 {
@@ -18,7 +19,7 @@ namespace MyVideoStreamer.Desktop
         }
 
         public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
+            => AppBuilder.Configure<MyVideoStreamerApp>()
                 .UsePlatformDetect()
                 .WithInterFont()
                 .LogToTrace()

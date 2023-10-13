@@ -25,6 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="MyVideoStreamerApp.axaml.cs">
+      <DependentUpon>MyVideoStreamerApp.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\MyVideoView.axaml.cs">
       <DependentUpon>MyVideoView.axaml</DependentUpon>
     </Compile>

@@ -6,7 +6,7 @@ using Avalonia.Media.Imaging;
 
 namespace MyVideoStreamer.ViewModels
 {
-    internal class MyVideoViewModel : ReactiveObject
+    public class MyVideoViewModel : ReactiveObject
     {
         private readonly MyVideoStream _videoStream;
         private readonly MyVideoDecoder _videoDecoder;
