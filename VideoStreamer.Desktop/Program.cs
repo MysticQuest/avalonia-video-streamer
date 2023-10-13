@@ -25,6 +25,8 @@ namespace VideoStreamer.Desktop
 
         private static void AppMain(Application app, string[] args)
         {
+            FFmpegBinariesHelper.RegisterFFmpegBinaries(); 
+
             if (app.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime)
             {
                 var mainWindow = new MainWindow();
