@@ -14,6 +14,7 @@ namespace MyVideoStreamer.Services
         private AVCodecContext* _pCodecContext;
         private AVFrame* _pFrame;
         private AVPacket* _pPacket;
+        private int _videoStreamIndex = -1;
 
         public MyVideoDecoder()
         {
@@ -44,6 +45,8 @@ namespace MyVideoStreamer.Services
 
             AVStream* videoStream = FindVideoStream(_pFormatContext);
             if (videoStream == null) throw new ApplicationException("Could not find video stream");
+
+            _videoStreamIndex = videoStream->index;  // Store the video stream index
 
             _pCodecContext = AllocateCodecContext(videoStream);
         }
@@ -77,8 +80,44 @@ namespace MyVideoStreamer.Services
 
         private void DecodeAndRenderFrames()
         {
-    
+            int ret;
+            while ((ret = ffmpeg.av_read_frame(_pFormatContext, _pPacket)) >= 0)
+            {
+                if (_pPacket->stream_index == _videoStreamIndex)
+                {
+                    ret = ffmpeg.avcodec_send_packet(_pCodecContext, _pPacket);
+                    if (ret < 0)
+                    {
+                        Console.WriteLine($"Error sending packet to decoder: {GetErrorMessage(ret)}");
+                        break;
+                    }
+
+                    while ((ret = ffmpeg.avcodec_receive_frame(_pCodecContext, _pFrame)) >= 0)
+                    {
+                        RenderFrame(_pFrame);
+                    }
+
+                    if (ret != ffmpeg.AVERROR(ffmpeg.EAGAIN))
+                    {
+                        Console.WriteLine($"Error receiving frame from decoder: {GetErrorMessage(ret)}");
+                        break;
+                    }
+                }
+
+                ffmpeg.av_packet_unref(_pPacket);
+            }
+
+            if (ret != ffmpeg.AVERROR_EOF)
+            {
+                Console.WriteLine($"Error reading frame: {GetErrorMessage(ret)}");
+            }
         }
+
+        private void RenderFrame(AVFrame* pFrame)
+        {
+            // Your rendering logic here
+        }
+
 
         private void Cleanup()
         {
