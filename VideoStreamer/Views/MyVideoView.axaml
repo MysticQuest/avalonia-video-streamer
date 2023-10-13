@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:MyVideoStreamer.ViewModels"
+             xmlns:local="clr-namespace:MyVideoStreamer.Views"
+             x:Class="MyVideoStreamer.Views.MyVideoView"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Name="ThisControl">
+
+    <UserControl.DataContext>
+        <vm:MyVideoViewModel/>
+    </UserControl.DataContext>
+
+    <Button Content="Start Streaming" Command="{Binding StartStreamingCommand}"/>
+</UserControl>

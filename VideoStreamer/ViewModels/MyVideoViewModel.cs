@@ -6,18 +6,19 @@ using System.Linq;
 using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
+using MyVideoStreamer.Services;
 
-namespace VideoStreamer.ViewModels
+namespace MyVideoStreamer.ViewModels
 {
-    internal class VideoViewModel : ReactiveObject
+    public class MyVideoViewModel : ReactiveObject
     {
-        private readonly VideoStream _videoStream;
+        private readonly MyVideoStream _videoStream;
 
         public ReactiveCommand<Unit, Unit> StartStreamingCommand { get; }
 
-        public VideoViewModel()
+        public MyVideoViewModel()
         {
-            _videoStream = new VideoStream();
+            _videoStream = new MyVideoStream();
             StartStreamingCommand = ReactiveCommand.CreateFromTask(StartStreamingAsync);
         }
 

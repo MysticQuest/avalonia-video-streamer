@@ -1,11 +1,12 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 
-namespace VideoStreamer.Views;
+namespace MyVideoStreamer.Views;
 
 public partial class MainWindow : Window
 {
     public MainWindow()
     {
-        InitializeComponent();
+        AvaloniaXamlLoader.Load(this);
     }
 }
