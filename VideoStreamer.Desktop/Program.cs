@@ -7,7 +7,7 @@ using Avalonia.ReactiveUI;
 using MyVideoStreamer.Views;
 using MyVideoStreamer.Services;
 
-namespace VideoStreamer.Desktop
+namespace MyVideoStreamer.Desktop
 {
     class Program
     {

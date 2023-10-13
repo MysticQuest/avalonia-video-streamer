@@ -7,7 +7,5 @@
              x:Class="MyVideoStreamer.Views.MyVideoView"
              DataContext="{Binding RelativeSource={RelativeSource Self}, Path=ViewModel}">
 
-  <views:MyVideoView>
-    <Image Source="{Binding CurrentFrame}" />
-  </views:MyVideoView>
+  <Image Source="{Binding CurrentFrame}" Stretch="UniformToFill"/>
 </UserControl>

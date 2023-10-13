@@ -30,7 +30,8 @@ namespace MyVideoStreamer.ViewModels
 
         public async Task StartStreamingAsync()
         {
-            await _videoStream.StartStreamingAsync("http://example.com/videostream");
+            var url = "rtsp://demo:demo@ipvmdemo.dyndns.org:5541/onvif-media/media.amp?profile=profile_1_h264&sessiontimeout=60&streamtype=unicast";
+            await _videoStream.StartStreamingAsync(url);
             _videoDecoder.DecodeVideo(GetVideoStreamReader());
         }
 
