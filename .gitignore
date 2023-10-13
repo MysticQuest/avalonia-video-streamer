@@ -454,4 +454,5 @@ $RECYCLE.BIN/
 !.vscode/extensions.json
 
 
-VideoStreamer/Res
+VideoStreamer/Res/ffmpeg-6.0-amd64-static
+VideoStreamer/Res/ffmpeg-6.0-full_build

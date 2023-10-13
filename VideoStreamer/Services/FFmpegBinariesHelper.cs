@@ -27,18 +27,11 @@ namespace MyVideoStreamer.Services
                 if (Directory.Exists(ffmpegDirectory) && File.Exists(ffmpegBinaryPath))
                 {
                     Console.WriteLine($"FFmpeg binaries found in: {ffmpegDirectory}");
-                    RegisterFFmpegBinariesPath(ffmpegDirectory);
+                    ffmpeg.RootPath = ffmpegDirectory;
                     return;
                 }
                 current = Directory.GetParent(current)?.FullName;
             }
-        }
-
-        private static void RegisterFFmpegBinariesPath(string path)
-        {
-            var current = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process);
-            var newPath = $"{path}{Path.PathSeparator}{current}";
-            Environment.SetEnvironmentVariable("PATH", newPath, EnvironmentVariableTarget.Process);
         }
     }
 }
