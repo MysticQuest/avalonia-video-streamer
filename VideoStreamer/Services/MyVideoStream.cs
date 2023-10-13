@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyVideoStreamer.Services
 {
-    internal class MyVideoStream
+    internal class MyVideoStream : IDisposable
     {
         private readonly HttpClient _httpClient;
         private readonly Pipe _pipe;
@@ -19,31 +19,58 @@ namespace MyVideoStreamer.Services
 
         public async Task StartStreamingAsync(string url)
         {
-            var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
+            HttpResponseMessage response = null;
 
-            var stream = await response.Content.ReadAsStreamAsync();
-
-            var writer = _pipe.Writer;
-            var buffer = writer.GetMemory(4096);
-
-            int read;
-            while ((read = await stream.ReadAsync(buffer)) != 0)
+            try
             {
-                writer.Advance(read);
-                var result = await writer.FlushAsync();
+                response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
 
-                if (result.IsCompleted)
+                response.EnsureSuccessStatusCode();
+
+                using var stream = await response.Content.ReadAsStreamAsync();
+
+                var writer = _pipe.Writer;
+
+                int read;
+                var buffer = writer.GetMemory(4096);
+                while ((read = await stream.ReadAsync(buffer)) != 0)
                 {
-                    break;
-                }
-                buffer = writer.GetMemory(4096);
-            }
+                    writer.Advance(read);
+                    var result = await writer.FlushAsync();
 
-            writer.Complete();
+                    if (result.IsCompleted)
+                    {
+                        break;
+                    }
+
+                    buffer = writer.GetMemory(4096);
+                }
+
+                writer.Complete();
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine($"HTTP Error: {e.Message}");
+                _pipe.Writer.Complete(e);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error: {e.Message}");
+                _pipe.Writer.Complete(e);
+            }
+            finally
+            {
+                response?.Dispose();
+            }
         }
 
         public PipeReader GetReader() => _pipe.Reader;
-    }
 
+        public void Dispose()
+        {
+            _httpClient.Dispose();
+            _pipe.Reader.Complete();
+            _pipe.Writer.Complete();
+        }
+    }
 }
