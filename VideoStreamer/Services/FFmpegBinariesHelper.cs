@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using FFmpeg.AutoGen;
+using FFmpeg.AutoGen.Bindings.DynamicallyLoaded;
 
 namespace MyVideoStreamer.Services
 {
@@ -34,5 +35,30 @@ namespace MyVideoStreamer.Services
                 current = Directory.GetParent(current)?.FullName;
             }
         }
+
+        //public static void RegisterFFmpegBinariesNew()
+        //{
+        //    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        //    {
+        //        var current = Environment.CurrentDirectory;
+        //        var probe = Path.Combine("FFmpeg", "bin", Environment.Is64BitProcess ? "x64" : "x86");
+
+        //        while (current != null)
+        //        {
+        //            var ffmpegBinaryPath = Path.Combine(current, probe);
+
+        //            if (Directory.Exists(ffmpegBinaryPath))
+        //            {
+        //                Console.WriteLine($"FFmpeg binaries found in: {ffmpegBinaryPath}");
+        //                FFmpeg.AutoGen.Bindings.DynamicallyLoaded.DynamicallyLoadedBindings.LibrariesPath = ffmpegBinaryPath;
+        //                return;
+        //            }
+
+        //            current = Directory.GetParent(current)?.FullName;
+        //        }
+        //    }
+        //    else
+        //        throw new NotSupportedException();
+        //}
     }
 }

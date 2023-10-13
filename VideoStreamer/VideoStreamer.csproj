@@ -20,6 +20,7 @@
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
     <PackageReference Include="FFmpeg.AutoGen" Version="6.0.0.2" />
+    <PackageReference Include="FFmpeg.AutoGen.Bindings.DynamicallyLoaded" Version="6.0.0.2" />
     <PackageReference Include="sdl2.nuget" Version="2.28.4" />
     <PackageReference Include="System.IO.Pipelines" Version="7.0.0" />
   </ItemGroup>
