@@ -9,6 +9,7 @@ namespace MyVideoStreamer.ViewModels
     internal class MyVideoViewModel : ReactiveObject
     {
         private readonly MyVideoStream _videoStream;
+        private readonly MyVideoDecoder _videoDecoder;
         private WriteableBitmap _currentFrame;
         public WriteableBitmap CurrentFrame
         {
@@ -19,6 +20,7 @@ namespace MyVideoStreamer.ViewModels
         public MyVideoViewModel()
         {
             _videoStream = new MyVideoStream();
+            _videoDecoder = new MyVideoDecoder(this);
         }
 
         public void UpdateFrame(WriteableBitmap frame)
@@ -29,6 +31,7 @@ namespace MyVideoStreamer.ViewModels
         public async Task StartStreamingAsync()
         {
             await _videoStream.StartStreamingAsync("http://example.com/videostream");
+            _videoDecoder.DecodeVideo(GetVideoStreamReader());
         }
 
         public PipeReader GetVideoStreamReader() => _videoStream.GetReader();
