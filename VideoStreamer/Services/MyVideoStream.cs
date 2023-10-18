@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using System;
+using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace MyVideoStreamer.Services
 
         public MyVideoStream()
         {
-            _httpClient = new HttpClient();
+            _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
             _pipe = new Pipe();
         }
 
@@ -24,41 +25,42 @@ namespace MyVideoStreamer.Services
 
             try
             {
-                response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
-
+                response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
 
-                using var stream = await response.Content.ReadAsStreamAsync();
-
+                await using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                 var writer = _pipe.Writer;
 
-                int read;
-                var buffer = writer.GetMemory(4096);
-                while ((read = await stream.ReadAsync(buffer)) != 0)
+                while (true)
                 {
-                    writer.Advance(read);
-                    var result = await writer.FlushAsync();
+                    var memory = writer.GetMemory(4096);
+                    var read = await stream.ReadAsync(memory).ConfigureAwait(false);
 
-                    if (result.IsCompleted)
+                    if (read == 0)
+                    {
+                        break; // Stream ended
+                    }
+
+                    writer.Advance(read);
+
+                    var flushResult = await writer.FlushAsync().ConfigureAwait(false);
+
+                    if (flushResult.IsCompleted)
                     {
                         break;
                     }
-
-                    buffer = writer.GetMemory(4096);
                 }
 
                 writer.Complete();
             }
             catch (HttpRequestException e)
             {
-                System.Diagnostics.Debug.WriteLine($"HTTP Error: {e.Message}");
-                Console.WriteLine($"HTTP Error: {e.Message}");
+                Debug.WriteLine($"HTTP Error: {e.Message}");
                 _pipe.Writer.Complete(e);
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine($"Error: {e.Message}");
-                Console.WriteLine($"Error: {e.Message}");
+                Debug.WriteLine($"Error: {e.Message}");
                 _pipe.Writer.Complete(e);
             }
             finally

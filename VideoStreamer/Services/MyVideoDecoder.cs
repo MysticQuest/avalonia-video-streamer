@@ -39,22 +39,34 @@ namespace MyVideoStreamer.Services
             Cleanup();
         }
 
+        //private void InitializeDecoder(string url)
+        //{
+        //    ffmpeg.avformat_network_init();
+        //    fixed (AVFormatContext** ppFormatContext = &_pFormatContext)
+        //    {
+        //        int ret = ffmpeg.avformat_open_input(ppFormatContext, url, null, null);
+        //        if (ret < 0) throw new ApplicationException($"Could not open input: {GetErrorMessage(ret)}");
+        //        ret = ffmpeg.avformat_find_stream_info(*ppFormatContext, null);
+        //        if (ret < 0) throw new ApplicationException($"Could not find stream info: {GetErrorMessage(ret)}");
+        //    }
+        //    AVStream* videoStream = FindVideoStream(_pFormatContext);
+        //    if (videoStream == null) throw new ApplicationException("Could not find video stream");
+        //    _videoStreamIndex = videoStream->index;
+        //    _pCodecContext = AllocateCodecContext(videoStream);
+        //}
+
         private void InitializeDecoder(string url)
         {
             fixed (AVFormatContext** ppFormatContext = &_pFormatContext)
             {
                 int ret = ffmpeg.avformat_open_input(ppFormatContext, url, null, null);
                 if (ret < 0) throw new ApplicationException($"Could not open input: {GetErrorMessage(ret)}");
-
                 ret = ffmpeg.avformat_find_stream_info(*ppFormatContext, null);
                 if (ret < 0) throw new ApplicationException($"Could not find stream info: {GetErrorMessage(ret)}");
             }
-
             AVStream* videoStream = FindVideoStream(_pFormatContext);
             if (videoStream == null) throw new ApplicationException("Could not find video stream");
-
             _videoStreamIndex = videoStream->index;  // Store the video stream index
-
             _pCodecContext = AllocateCodecContext(videoStream);
         }
 
